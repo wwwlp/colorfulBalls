@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			body {
+				margin: 50px;
+			}
+		</style>
+		<script src="underScore.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			window.onload = function() {
+				var myCanvas = document.getElementById("myCanvas");
+				var ctx = myCanvas.getContext("2d");
+
+				class Ball {
+					constructor(x, y, color) {
+						this.x = x;
+						this.y = y;
+						this.color = color;
+						this.r = 40;
+					}
+
+					//绘制小球
+					render() {
+						ctx.save();
+						ctx.beginPath();
+						ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+						ctx.fillStyle = this.color;
+						ctx.fill();
+						ctx.restore();
+					}
+				}
+
+				//会移动的小球类
+				//extends Ball,继承Ball的属性
+				class MoveBall extends Ball {
+					constructor(x, y, color) {
+						super(x, y, color);
+						
+
+						//量的变化
+						this.dX = _.random(-5, 5);
+						this.dY = _.random(-5, 5);
+						this.dR = _.random(1, 3);
+					}
+
+					upDate() {
+						this.x += this.dX;
+						this.y += this.dY;
+						this.r -= this.dR;
+						if(this.r <= 0) {
+							ballSet.delete(this);
+						}
+					}
+				}
+
+				//实例化小球
+				let ballSet = new Set();
+				let colorArr = ["red", "blue", "yellow", "pink", "orange", "white", "purple"];
+
+				//监听鼠标移动
+				myCanvas.addEventListener("mousemove", function(e) {
+					ballSet.add(new MoveBall(e.offsetX, e.offsetY, colorArr[_.random(0, colorArr.length - 1)])
+				);
+
+				});
+				
+				setInterval(function(){
+					//清屏
+					ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+					
+					//绘制
+					ballSet.forEach(function(v,i){
+						v.render();
+						v.upDate();
+					})
+					
+					console.log(ballSet.size);
+				}, 50);
+			}
+		</script>
+	</head>
+
+	<body>
+		<canvas id="myCanvas" width="800" height="800" style="background:#000;">
+Your browser does not support the canvas element.
+</canvas>
+	</body>
+
+</html>
